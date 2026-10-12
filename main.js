@@ -37,3 +37,25 @@ function renderTasks() {
     taskListEl.appendChild(taskDiv);
   });
 }
+async function loadTasks() {
+  try {
+    statusMessageEl.textContent = "Loading tasks...";
+
+    const rawTasks = await fetchTasks();
+
+    const jsonString = JSON.stringify(rawTasks);
+    const parsedTasks = JSON.parse(jsonString);
+
+    const taskInstances = parsedTasks.map(
+      (item) => new Task(item.id, item.title, item.completed),
+    );
+
+    taskManager.setTasks(taskInstances);
+    renderTasks();
+    statusMessageEl.textContent = "";
+  } catch (error) {
+    statusMessageEl.textContent = "Failed to load tasks. Please try again.";
+  }
+}
+
+loadTasksBtn.addEventListener("click", loadTasks);
